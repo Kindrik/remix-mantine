@@ -23,6 +23,12 @@ export async function loader() {
 export async function action({request}){
     const formData = await request.formData();
     const noteData = Object.fromEntries(formData);
+
+    if(noteData.title.trim().length < 5){
+        return {message:'Invalid title - must be at least 5 characters long'}
+    }
+
+
     const existingNotes = await getStoredNotes();
     noteData.id = new Date().toISOString();
     const updatedNotes = existingNotes.concat(noteData);
@@ -32,4 +38,11 @@ export async function action({request}){
 
 export function links() {
     return [...NewNoteLinks(), ...NoteListLinks()];
+}
+
+export function ErrorBoundary({error}) {
+    return <main className='error'>
+        <h1>An Error Occurred:</h1>
+        <p>{error.message}</p>
+    </main>
 }
